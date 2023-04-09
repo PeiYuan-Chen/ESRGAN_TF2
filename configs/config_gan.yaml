@@ -1,0 +1,32 @@
+# Data settings
+data:
+  Use_TFRecord: True
+  TFRecord_file: '/home/featurize/data/DF2K_bicubic_X4.tfrecord'
+  train_lr_dir: 'data/train/lr_x4'
+  train_hr_dir: 'data/train/hr'
+  test_lr_dir: 'data/test/lr_x4'
+  test_hr_dir: 'data/test/hr'
+  cache_dir: ''
+  lr_size: 32
+  hr_size: 128
+  upscale_factor: 4
+  channels: 3
+  batch_size: 16
+
+# Training settings
+training:
+  iterations: 400000
+  save_every: 500
+  gen_init_learning_rate: !!float 1e-4
+  dis_init_learning_rate: !!float 1e-4
+  lr_decay_iter_list: [ 50000, 100000,200000,300000 ]
+  lr_decay_rate: 0.5
+
+# Model checkpoints
+checkpoint:
+  latest_checkpoint_dir: 'outputs/checkpoints/gan'
+  gen_weights_file: 'outputs/weights/gan/gen/gen_weights.h5'
+  gen_pretrained_weight_file: 'outputs/weights/psnr/best_weights.h5'
+  history_file: 'outputs/history/gan/history.json'
+
+

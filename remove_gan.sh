@@ -1,0 +1,1 @@
+rm checkpoints/gan/*  history/gan/history.json weights/gan/gen/gen_weights.h5
