@@ -3,12 +3,15 @@ from tensorflow.keras.utils import load_img, img_to_array
 import tensorflow as tf
 from train_utils.metrics import calculate_psnr, calculate_ssim
 from configs.load_psnr_config import cfg
-from models.model_builder import generator
+from models.model_builder import generator_x4
 
 
 def eval():
+    physical_devices = tf.config.list_physical_devices('GPU')
+    for device in physical_devices:
+        tf.config.experimental.set_memory_growth(device, True)
     # load model
-    model = generator()
+    model = generator_x4()
     model.load_weights(cfg.best_weights_file)
 
     # load eval data
@@ -26,9 +29,9 @@ def eval():
         hr_img = tf.expand_dims(hr_img, axis=0)
         sr_img = model(lr_img, training=False)
         cur_psnr = calculate_psnr(
-            y_true=hr_img, y_pred=sr_img, scale=cfg.upscale_factor, y_only=False)
+            y_true=hr_img, y_pred=sr_img, scale=cfg.upscale_factor, y_only=True)
         cur_ssim = calculate_ssim(
-            y_true=hr_img, y_pred=sr_img, scale=cfg.upscale_factor, y_only=False)
+            y_true=hr_img, y_pred=sr_img, scale=cfg.upscale_factor, y_only=True)
         total_psnr += cur_psnr
         total_ssim += cur_ssim
         num += 1

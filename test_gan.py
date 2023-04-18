@@ -1,6 +1,7 @@
 import os
 import tensorflow as tf
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 from models.model_builder import generator_x4
 from configs.load_gan_config import cfg
 from tensorflow.keras.utils import load_img, img_to_array, array_to_img
@@ -12,7 +13,13 @@ def test():
     model = generator_x4()
     model.load_weights(cfg.gen_weights_file)
     # zoom region
-    zoom_region = (slice(100, 200), slice(100, 200))
+    y1 = 100
+    y2 = 150
+    x1 = 300
+    x2 = 400
+    zoom_region = (slice(y1, y2), slice(x1, x2))
+    zoom_rectangle = Rectangle(
+        (x1, y1), x2-x1, y2-y1, linewidth=2, edgecolor='r', facecolor='none')
     # load test data
     lr_dir = cfg.test_lr_dir
     hr_dir = cfg.test_hr_dir
@@ -42,6 +49,17 @@ def test():
         axes[0, 1].set_title('Super-resolution image')
         axes[0, 2].imshow(array_to_img(hr_img))
         axes[0, 2].set_title('High-resolution image')
+        # Create separate rectangle patches for each image in the first row
+        lr_zoom_rectangle = Rectangle(
+            (x1, y1), x2-x1, y2-y1, linewidth=2, edgecolor='r', facecolor='none')
+        sr_zoom_rectangle = Rectangle(
+            (x1, y1), x2-x1, y2-y1, linewidth=2, edgecolor='r', facecolor='none')
+        hr_zoom_rectangle = Rectangle(
+            (x1, y1), x2-x1, y2-y1, linewidth=2, edgecolor='r', facecolor='none')
+
+        axes[0, 0].add_patch(lr_zoom_rectangle)
+        axes[0, 1].add_patch(sr_zoom_rectangle)
+        axes[0, 2].add_patch(hr_zoom_rectangle)
 
         axes[1, 0].imshow(array_to_img(lr_zoom))
         axes[1, 0].set_title('Zoomed low-resolution image')

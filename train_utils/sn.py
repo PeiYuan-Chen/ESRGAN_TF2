@@ -1,5 +1,4 @@
 import tensorflow as tf
-from typeguard import typechecked
 
 
 @tf.keras.utils.register_keras_serializable(package="Addons")
@@ -30,7 +29,6 @@ class SpectralNormalization(tf.keras.layers.Wrapper):
       AttributeError: If `layer` does not has `kernel` or `embeddings` attribute.
     """
 
-    @typechecked
     def __init__(self, layer: tf.keras.layers, power_iterations: int = 1, **kwargs):
         super().__init__(layer, **kwargs)
         if power_iterations <= 0:

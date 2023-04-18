@@ -1,7 +1,8 @@
 import tensorflow as tf
-from tensorflow.keras.applications.vgg19 import VGG19,preprocess_input
+from tensorflow.keras.applications.vgg19 import VGG19, preprocess_input
 from tensorflow.keras.models import Model
 from tensorflow.keras.losses import MeanAbsoluteError, MeanSquaredError, BinaryCrossentropy
+from utils.gradient_map import gradient_intensity_map
 
 
 def _vgg(output_layer):
@@ -43,7 +44,7 @@ def make_perceptual_loss(criterion='l1', output='54', before_act=True):
     fea_out = Model(vgg.input, vgg.layers[output_layer].output)
 
     def perceptual_loss(y_true, y_pred):
-        y_true = preprocess_input(tf.cast(y_true,tf.float32)) / 12.75
+        y_true = preprocess_input(tf.cast(y_true, tf.float32)) / 12.75
         y_pred = preprocess_input(y_pred) / 12.75
         return loss_fn(fea_out(y_true), fea_out(y_pred))
 
@@ -109,3 +110,20 @@ def make_generator_loss(gan_type='ragan'):
     else:
         raise NotImplementedError(
             'Generator loss type {} is not recognized.'.format(gan_type))
+
+
+def make_gradient_loss(criterion='l1'):
+    if criterion == 'l1':
+        loss_fn = MeanAbsoluteError()
+    elif criterion == 'l2':
+        loss_fn = MeanSquaredError()
+    else:
+        raise NotImplementedError(
+            'Loss type {} is not recognized.'.format(criterion))
+
+    def gradient_loss(y_true, y_pred):
+        y_true_grad_map = gradient_intensity_map(y_true)
+        y_pred_grad_map = gradient_intensity_map(y_pred)
+        return loss_fn(y_true_grad_map, y_pred_grad_map)
+
+    return gradient_loss

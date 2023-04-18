@@ -4,4 +4,4 @@ __pycache__/
 checkpoint
 ckpt*
 *.json
-
+*.png
